@@ -85,7 +85,6 @@ const ClipboardIndicator = Lang.Class({
             y_align: Clutter.ActorAlign.CENTER
         });
         hbox.add_child(this._buttonText);
-        hbox.add(PopupMenu.arrowIcon(St.Side.BOTTOM));
         this.actor.add_child(hbox);
 
         this._createHistoryLabel();
