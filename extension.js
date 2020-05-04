@@ -1,5 +1,6 @@
 const Clutter    = imports.gi.Clutter;
 const Gio        = imports.gi.Gio;
+const GLib       = imports.gi.GLib;
 const Lang       = imports.lang;
 const Mainloop   = imports.mainloop;
 const Meta       = imports.gi.Meta;
@@ -553,14 +554,16 @@ const ClipboardIndicator = Lang.Class({
     },
 
     _openSettings: function () {
-        if (typeof ExtensionUtils.openPrefs === 'function') {
-            ExtensionUtils.openPrefs();
-        } else {
-            Util.spawn([
-                "gnome-shell-extension-prefs",
-                Me.uuid
-            ]);
-        }
+		Gio.DBus.session.call(
+			'org.gnome.Shell.Extensions',
+			'/org/gnome/Shell/Extensions',
+			'org.gnome.Shell.Extensions',
+			'OpenExtensionPrefs',
+			new GLib.Variant('(ssa{sv})', [Me.uuid, '', {}]),
+			null,
+			Gio.DBusCallFlags.NONE,
+			-1,
+			null);
     },
 
     _initNotifSource: function () {
