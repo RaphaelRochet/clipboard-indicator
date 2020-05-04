@@ -86,7 +86,7 @@ const ClipboardIndicator = Lang.Class({
             y_align: Clutter.ActorAlign.CENTER
         });
         hbox.add_child(this._buttonText);
-        this.actor.add_child(hbox);
+        this.add_child(hbox);
 
         this._createHistoryLabel();
         this._loadSettings();
@@ -131,7 +131,7 @@ const ClipboardIndicator = Lang.Class({
                 Lang.bind(that, that._onSearchTextChanged)
             );
 
-            that._entryItem.actor.add(that.searchEntry, { expand: true });
+            that._entryItem.add(that.searchEntry, { expand: true });
 
             that.menu.addMenuItem(that._entryItem);
 
@@ -221,14 +221,14 @@ const ClipboardIndicator = Lang.Class({
 
         if(searchedText === '') {
             this._getAllIMenuItems().forEach(function(mItem){
-                mItem.actor.visible = true;
+                mItem.visible = true;
             });
         }
         else {
             this._getAllIMenuItems().forEach(function(mItem){
                 let text = mItem.clipContents.toLowerCase();
                 let isMatching = text.indexOf(searchedText) >= 0;
-                mItem.actor.visible = isMatching
+                mItem.visible = isMatching
             });
         }
     },
@@ -278,7 +278,7 @@ const ClipboardIndicator = Lang.Class({
         icofavBtn.set_x_expand(true);
         icofavBtn.set_y_expand(true);
 
-        menuItem.actor.add_child(icofavBtn);
+        menuItem.add_child(icofavBtn);
         menuItem.icofavBtn = icofavBtn;
         menuItem.favoritePressId = icofavBtn.connect('button-press-event',
             Lang.bind(this, function () {
@@ -303,7 +303,7 @@ const ClipboardIndicator = Lang.Class({
         icoBtn.set_x_expand(false);
         icoBtn.set_y_expand(true);
 
-        menuItem.actor.add_child(icoBtn);
+        menuItem.add_child(icoBtn);
         menuItem.icoBtn = icoBtn;
         menuItem.deletePressId = icoBtn.connect('button-press-event',
             Lang.bind(this, function () {
@@ -633,8 +633,8 @@ const ClipboardIndicator = Lang.Class({
         let that = this;
         PRIVATEMODE = this.privateModeMenuItem.state;
         // We hide the history in private ModeTypee because it will be out of sync (selected item will not reflect clipboard)
-        this.scrollViewMenuSection.actor.visible = !PRIVATEMODE;
-        this.scrollViewFavoritesMenuSection.actor.visible = !PRIVATEMODE;
+        this.scrollViewMenuSection.visible = !PRIVATEMODE;
+        this.scrollViewFavoritesMenuSection.visible = !PRIVATEMODE;
         // If we get out of private mode then we restore the clipboard to old state
         if (!PRIVATEMODE) {
             let selectList = this.clipItemsRadioGroup.filter((item) => !!item.currentlySelected);
