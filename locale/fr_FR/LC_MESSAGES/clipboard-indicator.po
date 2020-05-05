@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-11 13:17+0300\n"
-"PO-Revision-Date: 2020-05-04 11:15+0200\n"
+"POT-Creation-Date: 2020-05-05 11:54+0200\n"
+"PO-Revision-Date: 2020-05-05 11:57+0200\n"
 "Last-Translator: Raphael Rochet <raphael@rri.fr>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -18,41 +18,53 @@ msgstr ""
 "X-Generator: Poedit 2.3\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: extension.js:81
-msgid "Text will be here"
-msgstr "(Vide)"
-
-#: extension.js:123
-msgid "Type here to search..."
-msgstr "Tapez ici pour chercher ..."
-
-#: extension.js:190
+#: actionBar.js:35
 msgid "Private mode"
 msgstr "Mode privé"
 
-#: extension.js:197 prefs.js:106
-msgid "Clear history"
-msgstr "Vider l'historique"
+#: confirmDialog.js:44 extension.js:486
+msgid "Cancel"
+msgstr "Annuler"
 
-#: extension.js:202
-msgid "Settings"
-msgstr "Paramètres"
+#: extension.js:86
+msgid "Text will be here"
+msgstr "(Vide)"
 
-#: extension.js:349
+#: extension.js:126
+msgid "Type here to search..."
+msgstr "Tapez ici pour chercher ..."
+
+#: extension.js:332
+msgid "Clear all?"
+msgstr "Tout supprimer ?"
+
+#: extension.js:333
+msgid "Are you sure you want to delete all clipboard items?"
+msgstr "Voulez-vous vraiment vider tout l'historique ?"
+
+#: extension.js:334
+msgid "This operation cannot be undone."
+msgstr "Cette opération ne peut pas être annulée."
+
+#: extension.js:336
+msgid "Clear"
+msgstr "Vider"
+
+#: extension.js:350
 msgid "Clipboard history cleared"
 msgstr "Historique vidé"
 
-#: extension.js:467
+#: extension.js:485
 msgid "Copied to clipboard"
 msgstr "Copié dans le presse-papier"
-
-#: extension.js:468
-msgid "Cancel"
-msgstr "Annuler"
 
 #: prefs.js:104
 msgid "Toggle the menu"
 msgstr "Afficher/cacher le menu"
+
+#: prefs.js:106
+msgid "Clear history"
+msgstr "Vider l'historique"
 
 #: prefs.js:108
 msgid "Previous entry"
@@ -62,62 +74,64 @@ msgstr "Entrée précédente"
 msgid "Next entry"
 msgstr "Entrée suivante"
 
-#: prefs.js:123
+#: prefs.js:119
 msgid "History Size"
 msgstr "Taille de l'historique"
 
-#: prefs.js:128
+#: prefs.js:124
 msgid "Refresh Interval (ms)"
 msgstr "Intervalle d'actualisation (ms)"
 
-#: prefs.js:133
+#: prefs.js:129
 msgid "Preview Size (characters)"
 msgstr "Longueur de l'aperçu (caractères)"
 
-#: prefs.js:138
+#: prefs.js:134
 msgid "Max cache file size (kb)"
 msgstr "Taille max du cache (Kio)"
 
-#: prefs.js:143
+#: prefs.js:139
 msgid "Cache only favorites"
 msgstr "Ne mémoriser que les favoris"
 
-#: prefs.js:148
+#: prefs.js:144
 msgid "Show notification on copy"
 msgstr "Afficher une notification à chaque copie"
 
-#: prefs.js:153
+#: prefs.js:149
 msgid "Move item to the top after selection"
 msgstr "Déplacer l'élément sélectionné en haut"
 
-#: prefs.js:158
+#: prefs.js:154
 msgid "Keyboard shortcuts"
 msgstr "Raccourcis clavier"
 
-#: prefs.js:163
+#: prefs.js:159
 msgid "Number of characters in top bar"
 msgstr "Nombre de caractères dans le panneau"
 
-#: prefs.js:168
+#: prefs.js:164
 msgid "What to show in top bar"
 msgstr "Afficher dans le panneau"
 
-#: prefs.js:173
+#: prefs.js:169
 msgid "Remove whitespace around text"
 msgstr "Supprimer les espaces autour du texte"
 
-#: prefs.js:178
-msgid "Enable Deletion"
-msgstr "Activer la suppression"
-
-#: prefs.js:225
+#: prefs.js:224
 msgid "Icon"
 msgstr "Icône"
 
-#: prefs.js:226
+#: prefs.js:225
 msgid "Clipboard Content"
 msgstr "Contenu"
 
-#: prefs.js:227
+#: prefs.js:226
 msgid "Both"
 msgstr "Les deux"
+
+#~ msgid "Settings"
+#~ msgstr "Paramètres"
+
+#~ msgid "Enable Deletion"
+#~ msgstr "Activer la suppression"
