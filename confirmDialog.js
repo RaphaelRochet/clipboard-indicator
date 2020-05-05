@@ -4,11 +4,6 @@ const ModalDialog = imports.ui.modalDialog;
 const CheckBox = imports.ui.checkBox;
 const Clutter = imports.gi.Clutter;
 
-const Gettext = imports.gettext.domain("gnome-trash");
-const _ = Gettext.gettext;
-
-
-
 function openConfirmDialog(title, message, sub_message, ok_label, callback) {
     new ConfirmDialog(title, message + "\n" + sub_message, ok_label, callback).open();
 }
