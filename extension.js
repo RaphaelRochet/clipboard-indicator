@@ -555,6 +555,7 @@ const ClipboardIndicator = Lang.Class({
     },
 
     _onOpenSettings: function () {
+		this.menu.close();
 		Gio.DBus.session.call(
 			'org.gnome.Shell.Extensions',
 			'/org/gnome/Shell/Extensions',
