@@ -150,7 +150,7 @@ const ClipboardIndicator = Lang.Class({
 
             that.scrollViewFavoritesMenuSection = new PopupMenu.PopupMenuSection();
             let favoritesScrollView = new St.ScrollView({
-                style_class: 'ci-history-menu-section',
+                style_class: 'vfade ci-history-menu-section',
                 overlay_scrollbars: true
             });
             favoritesScrollView.add_actor(that.favoritesSection.actor);
@@ -164,7 +164,7 @@ const ClipboardIndicator = Lang.Class({
 
             that.scrollViewMenuSection = new PopupMenu.PopupMenuSection();
             let historyScrollView = new St.ScrollView({
-                style_class: 'ci-history-menu-section',
+                style_class: 'vfade ci-history-menu-section',
                 overlay_scrollbars: true
             });
             historyScrollView.add_actor(that.historySection.actor);
