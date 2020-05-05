@@ -31,6 +31,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 const ConfirmDialog = Me.imports.confirmDialog;
+const ActionBar = Me.imports.actionBar;
 const Prefs = Me.imports.prefs;
 const prettyPrint = Utils.prettyPrint;
 const writeRegistry = Utils.writeRegistry;
@@ -43,12 +44,12 @@ let CACHE_ONLY_FAVORITE  = false;
 let DELETE_ENABLED       = true;
 let MOVE_ITEM_FIRST      = false;
 let ENABLE_KEYBINDING    = true;
-let PRIVATEMODE          = false;
 let NOTIFY_ON_COPY       = true;
 let MAX_TOPBAR_LENGTH    = 15;
 let TOPBAR_DISPLAY_MODE  = 1; //0 - only icon, 1 - only clipbord content, 2 - both
 let STRIP_TEXT           = false;
 
+// TODO: We should get rid of Lang.Class(...)
 const ClipboardIndicator = Lang.Class({
     Name: 'ClipboardIndicator',
     Extends: PanelMenu.Button,
@@ -58,7 +59,7 @@ const ClipboardIndicator = Lang.Class({
     _selectionOwnerChangedId: null,
     _historyLabelTimeoutId: null,
     _historyLabel: null,
-    _buttonText:null,
+    _buttonText: null,
 
     destroy: function () {
         this._disconnectSettings();
@@ -97,7 +98,7 @@ const ClipboardIndicator = Lang.Class({
         this._setupListener();
     },
     _updateButtonText: function(content){
-        if (!content || PRIVATEMODE){
+        if (!content || this.actionBar._privateMode()) {
             this._buttonText.set_text("...")
         } else {
             this._buttonText.set_text(this._truncate(content, MAX_TOPBAR_LENGTH));
@@ -187,27 +188,20 @@ const ClipboardIndicator = Lang.Class({
             // Add separator
             that.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-            // Private mode switch
-            that.privateModeMenuItem = new PopupMenu.PopupSwitchMenuItem(
-                _("Private mode"), PRIVATEMODE, { reactive: true });
-            that.privateModeMenuItem.connect('toggled',
-                Lang.bind(that, that._onPrivateModeSwitch));
-            that.menu.addMenuItem(that.privateModeMenuItem);
-            that._onPrivateModeSwitch();
+            // Action bar
+            that.actionBar = new ActionBar.ActionBar();
+            that.actionBar._registerPrivateModeSwitch(that._onPrivateModeSwitch.bind(that));
+            that.actionBar._registerRemoveAll(that._onRemoveAll.bind(that));
+            that.actionBar._registerOpenSettings(that._onOpenSettings.bind(that));
 
-            // Add 'Clear' button which removes all items from cache
-            let clearMenuItem = new PopupMenu.PopupMenuItem(_('Clear history'));
-            that.menu.addMenuItem(clearMenuItem);
-            clearMenuItem.connect('activate', Lang.bind(that, that._removeAll));
+            that.menu.addMenuItem(that.actionBar);
 
-            // Add 'Settings' menu item to open settings
-            let settingsMenuItem = new PopupMenu.PopupMenuItem(_('Settings'));
-            that.menu.addMenuItem(settingsMenuItem);
-            settingsMenuItem.connect('activate', Lang.bind(that, that._openSettings));
-
+            // Select the last item in clipboard items (LIFO stack)
             if (lastIdx >= 0) {
                 that._selectMenuItem(clipItemsArr[lastIdx]);
             }
+
+            that._onPrivateModeSwitch();
         });
     },
 
@@ -333,7 +327,8 @@ const ClipboardIndicator = Lang.Class({
 
         this._updateCache();
     },
-    _removeAll: function () {
+
+    _onRemoveAll: function () {
         const title = _("Clear all?");
         const message = _("Are you sure you want to delete all clipboard items?");
         const sub_message = _("This operation cannot be undone.");
@@ -353,6 +348,7 @@ const ClipboardIndicator = Lang.Class({
             });
             that._updateCache();
             that._showNotification(_("Clipboard history cleared"));
+
         });
     },
 
@@ -459,7 +455,7 @@ const ClipboardIndicator = Lang.Class({
     },
 
     _refreshIndicator: function () {
-        if (PRIVATEMODE) return; // Private mode, do not.
+        if (this.actionBar._privateMode()) return; // Private mode, do not.
 
         let that = this;
 
@@ -558,7 +554,7 @@ const ClipboardIndicator = Lang.Class({
         });
     },
 
-    _openSettings: function () {
+    _onOpenSettings: function () {
 		Gio.DBus.session.call(
 			'org.gnome.Shell.Extensions',
 			'/org/gnome/Shell/Extensions',
@@ -615,7 +611,7 @@ const ClipboardIndicator = Lang.Class({
         }
 
         notification.setTransient(true);
-        this._notifSource.notify(notification);
+        this._notifSource.showNotification(notification);
     },
 
     _createHistoryLabel: function () {
@@ -629,18 +625,17 @@ const ClipboardIndicator = Lang.Class({
         this._historyLabel.hide();
     },
 
-    _onPrivateModeSwitch: function() {
+    _onPrivateModeSwitch: function (privateMode = false) {
         let that = this;
-        PRIVATEMODE = this.privateModeMenuItem.state;
         // We hide the history in private ModeTypee because it will be out of sync (selected item will not reflect clipboard)
-        this.scrollViewMenuSection.visible = !PRIVATEMODE;
-        this.scrollViewFavoritesMenuSection.visible = !PRIVATEMODE;
+        this.scrollViewMenuSection.visible = !privateMode;
+        this.scrollViewFavoritesMenuSection.visible = !privateMode;
         // If we get out of private mode then we restore the clipboard to old state
-        if (!PRIVATEMODE) {
+        if (!privateMode) {
             let selectList = this.clipItemsRadioGroup.filter((item) => !!item.currentlySelected);
             Clipboard.get_text(CLIPBOARD_TYPE, function (clipBoard, text) {
-                            that._updateButtonText(text);
-                        });
+                that._updateButtonText(text);
+            });
             if (selectList.length) {
                 this._selectMenuItem(selectList[0]);
             } else {
@@ -711,10 +706,10 @@ const ClipboardIndicator = Lang.Class({
 
     _bindShortcuts: function () {
         this._unbindShortcuts();
-        this._bindShortcut(SETTING_KEY_CLEAR_HISTORY, this._removeAll);
-        this._bindShortcut(SETTING_KEY_PREV_ENTRY, this._previousEntry);
-        this._bindShortcut(SETTING_KEY_NEXT_ENTRY, this._nextEntry);
-        this._bindShortcut(SETTING_KEY_TOGGLE_MENU, this._toggleMenu);
+        this._bindShortcut(SETTING_KEY_CLEAR_HISTORY, this._onRemoveAll);
+        this._bindShortcut(SETTING_KEY_PREV_ENTRY, this._onPreviousEntry);
+        this._bindShortcut(SETTING_KEY_NEXT_ENTRY, this._onNextEntry);
+        this._bindShortcut(SETTING_KEY_TOGGLE_MENU, this._onToggleMenu);
     },
 
     _unbindShortcuts: function () {
@@ -806,7 +801,7 @@ const ClipboardIndicator = Lang.Class({
         });
     },
 
-    _previousEntry: function() {
+    _onPreviousEntry: function() {
         let that = this;
 
         that._clearDelayedSelectionTimeout();
@@ -829,7 +824,7 @@ const ClipboardIndicator = Lang.Class({
         });
     },
 
-    _nextEntry: function() {
+    _onNextEntry: function() {
         let that = this;
 
         that._clearDelayedSelectionTimeout();
@@ -852,7 +847,7 @@ const ClipboardIndicator = Lang.Class({
         });
     },
 
-    _toggleMenu: function(){
+    _onToggleMenu: function(){
         this.menu.toggle();
     }
 });
